@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pressure Control</title>
   <script src="/socket.io/socket.io.js"></script>
-  <script defer src="script.js"></script>
+  <script src="script.js" defer></script>
   <style>
     /* 设置 label 和 input 元素占一行 */
     .line-break {
@@ -16,13 +16,17 @@
   </style>
 </head>
 <body>
-  <h1>Current Pressure: <span id="pressureValue">0</span></h1>
+  <h1>Current Pressure: </h1>
+
+    <input id="pressureInput1" type="number" placeholder="输入目标压力1">
+    <input id="pressureInput2" type="number" placeholder="输入目标压力2">
+    <button id="updateButton">Update</button>
+    <button id="resetButton">Reset</button>
+
 
   <label class="line-break" for="muteSwitch">Mute Mode: </label>
   <input class="line-break" type="checkbox" id="muteSwitch" onchange="toggleMute()">
   
-  <input class="line-break" type="number" id="pressureInput" placeholder="Set new pressure">
-  <button class="line-break" id="updateButton">Update</button>
-  <button class="line-break" onclick="resetPressure()">Reset to Default Pressure</button>
+ 
 </body>
 </html>
