@@ -1,16 +1,5 @@
 const socket = io();
-const muteSwitch = document.getElementById("muteSwitch");
 
-function toggleMute() {
-  const muteStatus = muteSwitch.checked;
-  console.log('Mute mode changed:', muteStatus ? 'ON' : 'OFF');
-  socket.emit('muteStatus', muteStatus);
-}
-
-window.onload = function() {
-  muteSwitch.checked = false;
-  socket.emit('muteStatus', false);
-};
 
 socket.on('pressureUpdate', (data) => {
   if (data.targetPressure1 !== undefined) {
@@ -22,7 +11,36 @@ socket.on('pressureUpdate', (data) => {
   if (data.targetPressure3 !== undefined) {
     document.getElementById("pressureInput3").value = data.targetPressure3;
   }
-  console.log('监听后端发送的压力值:', data);
+  console.log('Received updated target pressures:', data);
+});
+
+socket.on('pressureData', (data) => {
+  if (typeof data !== 'string') {
+    console.error('Invalid data format received:', data);
+    return;
+  }
+
+  const pressures = data.split("\t");
+  if (pressures.length < 3) {
+    console.error('Invalid pressure data format:', data);
+    return;
+  }
+
+  pressures.forEach(pressure => {
+    const [key, value] = pressure.split(":");
+    if (!key || !value) {
+      console.error('Invalid key-value pair:', pressure);
+      return;
+    }
+
+    const elementId = key.trim();
+    const element = document.getElementById(elementId);
+    if (element) {
+      element.textContent = value.trim();
+    } else {
+      console.error(`Element with ID ${elementId} not found.`);
+    }
+  });
 });
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -32,6 +50,27 @@ document.addEventListener("DOMContentLoaded", function() {
   } else {
     console.error("resetButton not found!");
   }
+
+  const deflateButton12 = document.getElementById("deflateButton12");
+  if (deflateButton12) {
+    deflateButton12.addEventListener("click", () => {
+      socket.emit('deflate', { chambers: [2, 3] }); // 放气气室 2 和 3
+    });
+  }
+
+  const deflateButton3 = document.getElementById("deflateButton3");
+  if (deflateButton3) {
+    deflateButton3.addEventListener("click", () => {
+      socket.emit('deflate', { chambers: [1] }); // 放气气室 1
+    });
+  }
+
+  const stopAllButton = document.getElementById("stopAllButton");
+  if (stopAllButton) {
+    stopAllButton.addEventListener("click", () => {
+      socket.emit('stopAllPumps'); // 停止所有泵
+    });
+  }
 });
 
 function resetPressure() {
@@ -40,7 +79,7 @@ function resetPressure() {
 }
 
 document.getElementById("updateButton").addEventListener("click", function() {
-  console.log("进入updateButton测试");
+  console.log("Update button clicked");
   const newPressure1 = document.getElementById("pressureInput1").value;
   const newPressure2 = document.getElementById("pressureInput2").value;
   const newPressure3 = document.getElementById("pressureInput3").value;
@@ -55,5 +94,5 @@ document.getElementById("updateButton").addEventListener("click", function() {
     socket.emit('newPressure', { target: "targetPressure3", value: newPressure3 });
   }
 
-  console.log("User updated pressures更新的压力值:", newPressure1, newPressure2, newPressure3);
+  console.log("User updated pressures:", newPressure1, newPressure2, newPressure3);
 });

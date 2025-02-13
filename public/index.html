@@ -15,15 +15,19 @@
   </style>
 </head>
 <body>
-  <h1>Current Pressure: </h1>
-  <div id="pressureValue"></div> 
-  <input id="pressureInput1" type="number" placeholder="输入目标压力1">
-  <input id="pressureInput2" type="number" placeholder="输入目标压力2">
-  <input id="pressureInput3" type="number" placeholder="输入目标压力3"> <!-- 新增 -->
+  <h1>Current Pressure </h1>
+  <div>Current back(A0) pressure: <span id="pressure1">--</span> kPa</div>
+  <input id="pressureInput1" type="number" placeholder="Input target pressure1">
+  <br>
+  <div>Current left bottom(A2) pressure: <span id="pressure2">--</span> kPa</div>
+  <input id="pressureInput2" type="number" placeholder="Input target pressure2">
+  <br>
+  <div>Current right bottom(A1) pressure: <span id="pressure3">--</span> kPa</div>  
+  <input id="pressureInput3" type="number" placeholder="Input target pressure3"> 
+  <br>
   <button id="updateButton">Update</button>
   <button id="resetButton">Reset</button>
+  <!--button id="stopAllPumps">Stop All</button-->
 
-  <label class="line-break" for="muteSwitch">Mute Mode: </label>
-  <input class="line-break" type="checkbox" id="muteSwitch" onchange="toggleMute()">
 </body>
 </html>
