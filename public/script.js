@@ -13,11 +13,14 @@ window.onload = function() {
 };
 
 socket.on('pressureUpdate', (data) => {
-  const pressureValueElement = document.getElementById("pressureValue");
-  if (pressureValueElement) {
-    pressureValueElement.innerText = `targetPressure1: ${data.targetPressure1} kPa, targetPressure2: ${data.targetPressure2} kPa`;
-  } else {
-    console.error('Element with ID "pressureValue" not found');
+  if (data.targetPressure1 !== undefined) {
+    document.getElementById("pressureInput1").value = data.targetPressure1;
+  }
+  if (data.targetPressure2 !== undefined) {
+    document.getElementById("pressureInput2").value = data.targetPressure2;
+  }
+  if (data.targetPressure3 !== undefined) {
+    document.getElementById("pressureInput3").value = data.targetPressure3;
   }
   console.log('监听后端发送的压力值:', data);
 });
@@ -40,6 +43,7 @@ document.getElementById("updateButton").addEventListener("click", function() {
   console.log("进入updateButton测试");
   const newPressure1 = document.getElementById("pressureInput1").value;
   const newPressure2 = document.getElementById("pressureInput2").value;
+  const newPressure3 = document.getElementById("pressureInput3").value;
 
   if (newPressure1 !== "") {
     socket.emit('newPressure', { target: "targetPressure1", value: newPressure1 });
@@ -47,6 +51,9 @@ document.getElementById("updateButton").addEventListener("click", function() {
   if (newPressure2 !== "") {
     socket.emit('newPressure', { target: "targetPressure2", value: newPressure2 });
   }
+  if (newPressure3 !== "") {
+    socket.emit('newPressure', { target: "targetPressure3", value: newPressure3 });
+  }
 
-  console.log("User updated pressures更新的压力值:", newPressure1, newPressure2);
+  console.log("User updated pressures更新的压力值:", newPressure1, newPressure2, newPressure3);
 });

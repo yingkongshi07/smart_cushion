@@ -7,6 +7,11 @@ const path = require('path');
 const app = express();
 const port = 9000;
 
+// 初始化目标压力值
+let targetPressure1 = 20.0; // 默认值
+let targetPressure2 = 30.0; // 默认值
+let targetPressure3 = 40.0; // 新增默认值
+
 // 处理 HTTP 请求
 app.use(express.static(path.join(__dirname, '../public')));
 
@@ -50,13 +55,19 @@ io.on('connection', (socket) => {
       targetPressure1 = value;
     } else if (target === "targetPressure2") {
       targetPressure2 = value;
+    } else if (target === "targetPressure3") {
+      targetPressure3 = value;
     }
 
     // 将更新的压力值同步到 Mega2560
     sendToMega2560(target, value);
 
     // 向前端发送更新后的压力值
-    io.emit('pressureUpdate', { pressure: value });
+    io.emit('pressureUpdate', {
+      targetPressure1: targetPressure1,
+      targetPressure2: targetPressure2,
+      targetPressure3: targetPressure3
+    });
   });
 
   // 监听静音模式切换
@@ -68,16 +79,23 @@ io.on('connection', (socket) => {
   // 监听 Reset 按钮点击
   socket.on("resetPressure", () => {
     // 写死的默认压力值
-    const defaultTargetPressure1 = 20.0;
-    const defaultTargetPressure2 = 30.0;
-  
+    targetPressure1 = 20.0;
+    targetPressure2 = 30.0;
+    targetPressure3 = 40.0;
+
+    // 发送默认值到 Mega2560
+    sendToMega2560("targetPressure1", targetPressure1);
+    sendToMega2560("targetPressure2", targetPressure2);
+    sendToMega2560("targetPressure3", targetPressure3);
+
     // 发送更新后的默认值给所有前端
     io.emit("pressureUpdate", {
-      targetPressure1: defaultTargetPressure1,
-      targetPressure2: defaultTargetPressure2
+      targetPressure1: targetPressure1,
+      targetPressure2: targetPressure2,
+      targetPressure3: targetPressure3
     });
-  
-    console.log("Reset pressures:", defaultTargetPressure1, defaultTargetPressure2);
+
+    console.log("Reset pressures:", targetPressure1, targetPressure2, targetPressure3);
   });
 
   socket.on('disconnect', () => {
